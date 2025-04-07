@@ -1,7 +1,8 @@
+
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-{/*type MenuIconProps ={
+export type MenuIconProps ={
   title:string,
   path:string,
   navigate:(path:string)=>void
@@ -43,13 +44,17 @@ const menus = [
   {
     title:'Achievements and Rewards',
     path:"/achievements"
+  },
+  {
+    title:'Logout',
+    path:"/"
   }
 ]
 
 const MenuIcon = ({title,path,navigate}:MenuIconProps)=>{
   return(
     <div 
-      className="p-4 px-8 cursor-pointer text-white hover:bg-blue-500"
+      className="p-2 px-8 cursor-pointer text-black hover:bg-gray-400"
       onClick={()=>{
         navigate(path)
       }}
@@ -57,41 +62,16 @@ const MenuIcon = ({title,path,navigate}:MenuIconProps)=>{
       {title}
     </div>
   )
-}*/}
-
+}
 
 const Menu = () => {
-  return (
-    <div className='w-65 h-svh bg-gray-200 pl-7 pt-10 justify-center space-y-8 text-lg mt-13 fixed left-0'>
-      <div>
-        Dashboard
-      </div>
-      <div>
-        Profile
-      </div>
-      <div>
-        Matches
-      </div>
-      <div>
-        Attendance
-      </div>
-      <div>
-        Notifications
-      </div>
-      <div>
-        Performance Tracking
-      </div>
-      <div>
-        Feedback
-      </div>
-      <div>
-        Tutorials Library
-      </div>
-      <div>
-        Achievements and Rewards
-      </div>
 
-        {/*{menus.map((menu)=>(
+  const navigate = useNavigate()
+
+  return (
+    <div className='w-65 h-svh bg-gray-200 pl-5 pt-2 justify-center space-y-2 text-lg mt-13 fixed left-0'>
+
+        {menus.map((menu)=>(
           <div>
             <MenuIcon 
               title={menu.title}
@@ -99,7 +79,7 @@ const Menu = () => {
               navigate={navigate}
             />
           </div>
-        ))}*/}
+      ))}
     </div>
 
 

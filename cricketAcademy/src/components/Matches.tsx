@@ -4,17 +4,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Cards from './MatchCards.tsx';
 import { matches } from '../constants/Matches.ts';
 
-const Matches = () => {
+const DashBoard = () => {
   const [filter, setFilter] = useState('All'); // ✅ State for selected filter
 
   // ✅ Function to parse date string into Date object (assuming format: "DD MMMM YYYY")
-  const parseDate = (dateStr: string) => {
+  const parseDate = (dateStr: String) => {
     const [day, month, year] = dateStr.split(' '); // Split by space ("28 March 2025")
     const monthIndex = new Date(`${month} 1, ${year}`).getMonth(); // Get month index
-    return new Date(Number(year), monthIndex, Number(day)); // Convert to Date object
+    return new Date(year, monthIndex, day); // Convert to Date object
   };
 
-  // ✅ Function to filter matches based on the selected filter
+  // ✅ Function to filter sessions based on the selected filter
   const filteredMatches = matches.filter((match) => {
     const matchDate = parseDate(match.date);
     const today = new Date();
@@ -37,10 +37,10 @@ const Matches = () => {
 
   return (
     <div>
-      <div className="ml-[300px] mt-4 h-fit w-fit">
+      <div className="ml-[300px] mt-4 h-fit w-fit justify-self-end mr-20">
         <FontAwesomeIcon className="text-xl" icon={faFilter} />
         <select
-          name="filter"
+          name="role"
           className="p-2 border rounded ml-2"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -51,7 +51,7 @@ const Matches = () => {
           <option value="This Month">This Month</option>
         </select>
       </div>
-      <div className="grid grid-cols-3 gap-8 mt-8 border border-gray-700 rounded-md ml-10 mr-10">
+      <div className="grid grid-cols-4 gap-5 mt-5 mr-10 ml-10">
         {filteredMatches.length > 0 ? (
           filteredMatches.map((match) => (
             <Cards
@@ -61,15 +61,16 @@ const Matches = () => {
               date={match.date}
               reportingTime={match.reportingTime}
               location={match.location}
-              opponent={match.opponent}
+              team={match.team}
+              status={match.status}
             />
           ))
         ) : (
-          <p className="text-center col-span-3 text-gray-500">No matches found.</p>
+          <p className="text-center col-span-3 text-gray-500">No sessions found.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default Matches;
+export default DashBoard;

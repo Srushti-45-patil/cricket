@@ -1,6 +1,7 @@
 import React from 'react'
 
 export type Session = {
+    attendance: string
     id: number,
     sessionType: String,
     date: String,
@@ -26,7 +27,7 @@ type CardProps = {
 
 const TaskCards = ({sessionType, date, time, duration, batch, coachAssigned, skillFocusAreas, note}: CardProps) => {
   return (
-    <div>
+    <div className='border border-black rounded-2xl p-5'>
         <div><span className='font-semibold text-blue-800'>Session Type:</span> {sessionType}</div>
         <div><span className='font-semibold text-blue-800'>Date:</span> {date}</div>
         <div><span className='font-semibold text-blue-800'>Time:</span> {time}</div>

@@ -357,6 +357,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const getRoleId = (role: string): number => {
   switch (role) {
@@ -373,64 +374,121 @@ const getRoleId = (role: string): number => {
 
 const Registration = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    day: "",
-    month: "",
-    year: "",
-    username: "",
-    gender: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-    parentPhone: "",
-    emergencyPhone: "",
-    country: "India",
-    state: "Maharashtra",
-    city: "Mumbai",
-    pincode: "400001",
-    role: ""
+      fullName: "",
+      username: "",
+      email: "",
+      phone: "",
+      parentPhone: "",
+      emergencyPhone: "",
+      dob: "",
+      age: "",
+      gender: "",
+      password: "",
+      confirmPassword: "",
+      country: "India",
+      state: "Maharashtra",
+      city: "Mumbai",
+      pincode: "400001",
+      role: "",
+      profilePic: null as File | null,
   });
-
-  const [error, setError] = useState("");
+   const [error, setError] = useState("");
+  const [countries, setCountries] = useState<string[]>([]);
+  const [states, setStates] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("https://api.example.com/countries")
+      .then((res) => res.json())
+      .then((data) => setCountries(data));
+  }, []);
+
+  useEffect(() => {
+    if (formData.country) {
+      fetch("https://api.example.com/states?country=${formData.country")
+        .then((res) => res.json())
+        .then((data) => setStates(data));
+    }
+  }, [formData.country]);
+
+  useEffect(() => {
+    if (formData.state) {
+      fetch("https://api.example.com/cities?state=${formData.state")
+        .then((res) => res.json())
+        .then((data) => setCities(data));
+    }
+  }, [formData.state]);
+
+
 
   const validateEmail = (email: string) =>
     /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
+  const calculateAge = (dob: string) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age.toString();
+  };
 
+
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  // ) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    
+  // };
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "dob") {
+      const calculatedAge = calculateAge(value);
+      setFormData({ ...formData, dob: value, age: calculatedAge });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFormData((prev) => ({ ...prev, profilePic: e.target.files![0] }));
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const {
       fullName,
-      day,
-      month,
-      year,
       username,
       email,
       phone,
-      emergencyPhone,
       password,
       confirmPassword,
       country,
       state,
       city,
       pincode,
-      gender,
-      role
+      role,
+      emergencyPhone,
+      dob,
+      age,
+      gender
+
     } = formData;
 
     if (
       !fullName ||
-      !day ||
-      !month ||
-      !year ||
       !username ||
       !email ||
       !phone ||
@@ -467,8 +525,6 @@ const Registration = () => {
     const firstName = nameParts[0];
     const middleName = nameParts.length === 3 ? nameParts[1] : "";
     const lastName = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : "";
-
-    const dob = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     const countryCode = "+91";
 
     const userPayload = {
@@ -481,6 +537,7 @@ const Registration = () => {
       phone,
       emergency_contact_no: emergencyPhone,
       dob,
+      age,
       gender,
       country: 1,
       state: 1,
@@ -532,46 +589,196 @@ const Registration = () => {
 
   return (
     <div
-      className="h-screen bg-no-repeat bg-cover flex justify-center items-center"
+      className="min-h-screen bg-cover bg-center flex justify-center items-start py-10 overflow-auto"
       style={{ backgroundImage: `url(/assets/registerback.jpeg)` }}
     >
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <h2 className="text-2xl font-bold text-center mb-4">Registration</h2>
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold text-center mb-6">Registration</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} className="p-2 border rounded" />
-          <input type="tel" name="phone" placeholder="Phone No." onChange={handleChange} className="p-2 border rounded" />
-          <input type="text" name="username" placeholder="Username" onChange={handleChange} className="p-2 border rounded" />
-          <input type="tel" name="parentPhone" placeholder="Parent Phone" onChange={handleChange} className="p-2 border rounded" />
-          <input type="tel" name="emergencyPhone" placeholder="Emergency Contact No." onChange={handleChange} className="p-2 border rounded" />
-          <input type="email" name="email" placeholder="Email" onChange={handleChange} className="p-2 border rounded" />
-          <input type="password" name="password" placeholder="Password" onChange={handleChange} className="p-2 border rounded" />
-          <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} className="p-2 border rounded" />
-          <div className="flex gap-2">
-            <input type="number" name="day" placeholder="DD" onChange={handleChange} className="p-2 border rounded w-1/3" />
-            <input type="number" name="month" placeholder="MM" onChange={handleChange} className="p-2 border rounded w-1/3" />
-            <input type="number" name="year" placeholder="YYYY" onChange={handleChange} className="p-2 border rounded w-1/3" />
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Phone No."
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="tel"
+            name="parentPhone"
+            placeholder="Parent Phone No."
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="tel"
+            name="emergencyPhone"
+            placeholder="Emergency Phone No."
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="date"
+            name="dob"
+            placeholder="Date of Birth"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            name="age"
+            value={formData.age}
+            readOnly
+            placeholder="Age"
+            className="p-2 border rounded bg-gray-100"
+          />
+          <div className="flex items-center gap-4 col-span-2">
+            <span className="font-medium">Gender:</span>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="Male"
+                onChange={handleChange}
+              />{" "}
+              Male
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="Female"
+                onChange={handleChange}
+              />{" "}
+              Female
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="Other"
+                onChange={handleChange}
+              />{" "}
+              Other
+            </label>
           </div>
-          <div className="flex gap-4 items-center">
-            <span>Gender:</span>
-            <label><input type="radio" name="gender" value="Male" onChange={handleChange} /> Male</label>
-            <label><input type="radio" name="gender" value="Female" onChange={handleChange} /> Female</label>
-            <label><input type="radio" name="gender" value="Other" onChange={handleChange} /> Other</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <select
+            name="country"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          >
+            {countries.length ? (
+              countries.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))
+            ) : (
+              <option>India</option>
+            )}
+          </select>
+          <select
+            name="state"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          >
+            {states.length ? (
+              states.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))
+            ) : (
+              <option>Maharashtra</option>
+            )}
+          </select>
+          <select
+            name="city"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          >
+            {cities.length ? (
+              cities.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))
+            ) : (
+              <option>Mumbai</option>
+            )}
+          </select>
+          <input
+            type="text"
+            name="pincode"
+            placeholder="Pincode"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <div className="col-span-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Profile Picture
+            </label>
+            <input
+              type="file"
+              placeholder="Upload"
+              onChange={handleFileChange}
+              className="mt-1 p-2 w-full border rounded-md"
+            />
           </div>
-          <input type="text" name="country" placeholder="Country" onChange={handleChange} value={formData.country} className="p-2 border rounded" />
-          <input type="text" name="state" placeholder="State" onChange={handleChange} value={formData.state} className="p-2 border rounded" />
-          <input type="text" name="city" placeholder="City" onChange={handleChange} value={formData.city} className="p-2 border rounded" />
-          <input type="text" name="pincode" placeholder="Pincode" onChange={handleChange} className="p-2 border rounded" />
-          <select name="role" onChange={handleChange} className="p-2 border rounded">
+          <select
+            name="role"
+            onChange={handleChange}
+            className="p-2 border rounded"
+          >
             <option value="">Select Role</option>
             <option value="Player">Player</option>
             <option value="Coach">Coach</option>
             <option value="Admin">Admin</option>
           </select>
-          <button type="submit" className="col-span-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Next</button>
+          <button
+            type="submit"
+            className="col-span-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          >
+            Next
+          </button>
         </form>
       </div>
     </div>

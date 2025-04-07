@@ -31,7 +31,8 @@ const CoachRegistration: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
+    
     const formPayload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value) {

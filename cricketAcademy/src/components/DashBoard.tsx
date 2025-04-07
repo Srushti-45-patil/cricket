@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,7 +38,7 @@ const DashBoard = () => {
 
   return (
     <div>
-      <div className="ml-[300px] mt-4 h-fit w-fit">
+      <div className="ml-[300px] mt-4 h-fit w-fit justify-self-end mr-20">
         <FontAwesomeIcon className="text-xl" icon={faFilter} />
         <select
           name="role"
@@ -51,7 +52,7 @@ const DashBoard = () => {
           <option value="This Month">This Month</option>
         </select>
       </div>
-      <div className="grid grid-cols-3 gap-8 mt-8 border border-gray-700 rounded-md ml-10 mr-10">
+      <div className="grid grid-cols-4 gap-5 mt-5 mr-10 ml-10">
         {filteredSessions.length > 0 ? (
           filteredSessions.map((session) => (
             <Cards

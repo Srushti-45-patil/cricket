@@ -84,7 +84,7 @@ const PlayerRegistration: React.FC = () => {
       <div className="relative z-10 p-4 md:p-8">
         <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-6 md:p-8 w-full max-w-2xl mx-auto overflow-hidden">
           <h2 className="text-2xl font-semibold mb-6 text-center text-blue-900">Registration</h2>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-2" onSubmit={handleSubmit}>
             {/* Health Details */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Health Details</h3>
@@ -107,6 +107,12 @@ const PlayerRegistration: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <h3>Parent Details</h3>
+              <input type="text" placeholder="Parent Name" name="parentName" onChange={handleChange} className="p-2 border rounded" />
+              <input type="tel" name="parentPhone" placeholder="Parent Phone" onChange={handleChange} className="p-2 border rounded ml-35" />
             </div>
 
             {/* Skill Details */}
@@ -139,19 +145,17 @@ const PlayerRegistration: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold mb-2">Admission Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <select
-  name="preferredRole"
-  value={formData.preferredRole}
-  onChange={handleChange}
-  className="input-field"
->
-  <option value="">Select a Role</option>
-  <option value="batsman">Batsman</option>
-  <option value="bowler">Bowler</option>
-  <option value="allrounder">All-Rounder</option>
-  <option value="wicketkeeper">Wicketkeeper</option>
-</select>
-
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Preferred Role</label>
+                  <input
+                    type="text"
+                    name="preferredRole"
+                    value={formData.preferredRole}
+                    onChange={handleChange}
+                    placeholder="Batsman"
+                    className="input-field"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Coaching Preference</label>
                   <select name="coachingPreference" value={formData.coachingPreference} onChange={handleChange} className="input-field">
